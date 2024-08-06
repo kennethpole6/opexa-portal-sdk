@@ -1,0 +1,45 @@
+# Getting Started
+
+To use the **Opexa Portal SDK** in your project, you need to configure it properly. This guide will walk you through the setup process.
+
+# Installation
+
+First, install the SDK using npm:
+
+```js filename="terminal" {3} copy
+npm install @opexa/portal-sdk
+```
+
+### Creating an SDK Instance
+
+To use the SDK, you need to create an instance with the appropriate configuration. Here's how you can do it:
+
+```ts filename="/lib/sdk.ts" copy
+import Sdk from "@opexa/portal-sdk";
+
+export const sdk = new Sdk({
+  platform: "Z892",
+  environment: "development", // or "production",
+});
+```
+
+### Usage Example
+
+```ts filename="app.ts" copy
+import { sdk } from "$lib/sdk";
+import * as React from "react";
+
+function Page() {
+  const [account, setAccount] = React.useState();
+
+  React.useEffect(function () {
+    sdk.account().then(setAccount);
+  }, []);
+
+  return (
+    <pre>
+      <code>{JSON.stringify(account, null, 2)}</code>
+    </pre>
+  );
+}
+```
