@@ -8,6 +8,13 @@ const config: DocsThemeConfig = {
   },
   docsRepositoryBase:
     "https://github.com/HighOutputVentures/opexacms-templates",
+  primaryHue: 40,
+  primarySaturation: 100,
+  useNextSeoProps() {
+    return {
+      title: "Opexa Portal SDK",
+    };
+  },
 };
 
 export default config;

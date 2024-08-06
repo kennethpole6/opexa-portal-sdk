@@ -1,1 +1,128 @@
-# Sign in
+# Sign In
+
+The Opexa Portal SDK provides a `signIn` method to authenticate users. This guide explains how to use this method to implement user sign-in functionality in your application.
+
+## Using the signIn Method
+
+The `signIn` method accepts different input types based on the authentication method you want to use. Here are the available options:
+
+### Sign In with Name and Password
+
+```typescript copy
+sdk.signIn({
+  type: "NAME_AND_PASSWORD",
+  name: "username",
+  password: "userpassword",
+});
+```
+
+### Sign In with Mobile Number
+
+```typescript copy
+sdk.signIn({
+  type: "MOBILE_NUMBER",
+  mobileNumber: "1234567890",
+  verificationCode: "123456",
+});
+```
+
+### Method Signature
+
+```typescript
+signIn(input: SignInInput): Promise<SignInReturn>
+```
+
+### Input Types
+
+The `SignInInput` type is a union of two possible input structures:
+
+```typescript
+type SignInInput =
+  | {
+      type: "NAME_AND_PASSWORD";
+      name: string;
+      password: string;
+    }
+  | {
+      type: "MOBILE_NUMBER";
+      mobileNumber: string;
+      verificationCode: string;
+    };
+```
+
+### Return Types
+
+The `SignInReturn` type provides clear success/failure information:
+
+```typescript
+type SignInReturn =
+  | {
+      ok: true;
+    }
+  | {
+      ok: false;
+      error:
+        | HttpError
+        | {
+            name: "AccountNotFound";
+            message: string;
+          };
+    };
+```
+
+### Usage Examples
+
+Here's a detailed example of implementing a sign-in form using React
+
+```tsx filename="SignInForm.tsx" copy
+import React, { useState } from "react";
+import { sdk } from "$lib/sdk";
+
+function SignInForm() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      const result = await sdk.signIn({
+        type: "NAME_AND_PASSWORD",
+        name: username,
+        password: password,
+      });
+
+      if (result.ok) {
+        // Sign-in successful, redirect or update UI
+        console.log("Sign-in successful");
+      } else {
+        // Handle sign-in error
+        setError(result.error.message);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      />
+      <button type="submit">Sign In</button>
+      {error && <p>{error}</p>}
+    </form>
+  );
+}
+```

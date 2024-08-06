@@ -2,7 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/installation": "pages/installation.js",
   "/": "pages/index.js",
+  "/installation": "pages/installation.js",
   "/instance/sign-in": "pages/instance/sign-in.js"
 }
