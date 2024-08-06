@@ -1,0 +1,120 @@
+# Account
+
+The Opexa Portal SDK provides `account()` method to retrieve current user's details. This guide offers a detailed explanation of how to use this method to access and utilize user-specific information in your application.
+
+## Using the account() Method
+
+The `account()` method is designed to fetch details about the current authenticated user. Here's how you can use it:
+
+```typescript
+sdk.account();
+```
+
+### Method Signature
+
+```typescript
+account(): Promise<AccountReturn>
+```
+
+### Return Types
+
+The `AccountReturn` type provides a structured format for user account information:
+
+```typescript
+type AccountReturn =
+  | {
+      ok: true;
+      data: Account;
+    }
+  | {
+      ok: false;
+      error: HttpError;
+    };
+
+interface Account {
+  id: string;
+  name: string;
+  status: MemberAccountStatus;
+  realName?: string;
+  nickName?: string;
+  dateOfBirth?: Date;
+  validId?: string;
+  emailAddress?: string;
+  mobileNumber?: string;
+  verified: boolean;
+  verificationStatus: MemberAccountVerificationStatus;
+  mobileNumberVerified: boolean;
+  mobileNumberVerificationRequired: boolean;
+  transactionPassword: boolean;
+  dateTimeLastActive?: Date;
+  dateTimeCreated: Date;
+  dateTimeLastUpdated: Date;
+}
+```
+
+### Usage Examples
+
+Here's an example of how to use the `account()` method in a React component:
+
+```tsx filename="App.tsx" copy
+import React, { useState, useEffect } from "react";
+import { sdk } from "$lib/sdk";
+
+function AccountInfo() {
+  const [accountData, setAccountData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAccountData = async () => {
+      try {
+        const result = await sdk.account();
+        if (result.ok) {
+          setAccountData(result.data);
+        } else {
+          setError(result.error.message);
+        }
+      } catch (err) {
+        setError("An unexpected error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAccountData();
+  }, []);
+
+  if (isLoading) return <div>Loading account information...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!accountData) return <div>No account data available</div>;
+
+  return (
+    <div>
+      <h2>Account Information</h2>
+      <p>Name: {accountData.name}</p>
+      <p>Status: {accountData.status}</p>
+      <p>Email: {accountData.emailAddress || "Not provided"}</p>
+      <p>Mobile: {accountData.mobileNumber || "Not provided"}</p>
+      <p>Verified: {accountData.verified ? "Yes" : "No"}</p>
+      <p>Verification Status: {accountData.verificationStatus}</p>
+      <p>Mobile Verified: {accountData.mobileNumberVerified ? "Yes" : "No"}</p>
+      <p>
+        Mobile Verification Required:
+        {accountData.mobileNumberVerificationRequired ? "Yes" : "No"}
+      </p>
+      <p>
+        Transaction Password Set:
+        {accountData.transactionPassword ? "Yes" : "No"}
+      </p>
+      <p>
+        Account Created:
+        {new Date(accountData.dateTimeCreated).toLocaleString()}
+      </p>
+      <p>
+        Last Updated:
+        {new Date(accountData.dateTimeLastUpdated).toLocaleString()}
+      </p>
+    </div>
+  );
+}
+```

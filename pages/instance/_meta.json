@@ -1,3 +1,7 @@
 {
-  "sign-in": "Sign In"
+  "sign-in": "Sign In",
+  "sign-out": "Sign Out",
+  "platform": "Platform",
+  "account": "Account",
+  "create-account": "Create Account"
 }

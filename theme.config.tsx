@@ -12,7 +12,7 @@ const config: DocsThemeConfig = {
   primarySaturation: 100,
   useNextSeoProps() {
     return {
-      title: "Opexa Portal SDK",
+      titleTemplate: "Opexa Portal SDK | %s",
     };
   },
 };

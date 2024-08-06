@@ -1,0 +1,154 @@
+# Create Account
+
+The Opexa Portal SDK provides `createAccount()` method to register new users on the platform. This guide offers a detailed explanation of how to use this method to implement user registration functionality in your application.
+
+## Using the createAccount() Method
+
+The `createAccount()` method is designed to handle the registration of new users with various required and optional parameters. Here's how you can use it:
+
+```typescript
+sdk.createAccount(input);
+```
+
+### Method Signature
+
+```typescript
+createAccount(input: CreateAccountInput): Promise<CreateAccountReturn>
+```
+
+### Input Types
+
+The `CreateAccountInput` type defines the structure of the account creation parameters:
+
+```typescript
+interface CreateAccountInput {
+  id?: string;
+  name: string;
+  password: string;
+  mobileNumber: string;
+  dateOfBirth: string;
+  btag?: string;
+  domain?: string;
+  referralCode?: string;
+  verificationCode?: string;
+  reCAPTCHAResponse?: string;
+}
+```
+
+### Return Types
+
+The `CreateAccountReturn` type provides a structured format for the account creation result:
+
+```typescript
+type CreateAccountReturn =
+  | {
+      ok: true;
+      error?: never;
+      data: {
+        id: string;
+      };
+    }
+  | {
+      ok: false;
+      data?: never;
+      error:
+        | HttpError
+        | {
+            name:
+              | "AccountNameNotAvailableError"
+              | "InvalidPlatformError"
+              | "InvalidReCAPTCHAResponseError"
+              | "InvalidSMSVerificationCodeError"
+              | "MinimumAgeRequirementError"
+              | "MobileNumberNotAvailableError";
+            message: string;
+          };
+    };
+```
+
+### Usage Examples
+
+Here's a detailed example of how to use the `createAccount()` method in a React component:
+
+```tsx filename="App.tsx" copy
+import React, { useState } from "react";
+import { sdk } from "$lib/sdk";
+
+function CreateAccountForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    password: "",
+    mobileNumber: "",
+    dateOfBirth: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await sdk.createAccount(formData);
+      if (result.ok) {
+        setSuccess(true);
+        console.log("Account created with ID:", result.data.id);
+      } else {
+        setError(result.error.message);
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (success) return <div>Account created successfully!</div>;
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        placeholder="Username"
+        required
+      />
+      <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+        placeholder="Password"
+        required
+      />
+      <input
+        type="tel"
+        name="mobileNumber"
+        value={formData.mobileNumber}
+        onChange={handleChange}
+        placeholder="Mobile Number"
+        required
+      />
+      <input
+        type="date"
+        name="dateOfBirth"
+        value={formData.dateOfBirth}
+        onChange={handleChange}
+        required
+      />
+      <button type="submit" disabled={isLoading}>
+        {isLoading ? "Creating Account..." : "Create Account"}
+      </button>
+      {error && <p className="error">{error}</p>}
+    </form>
+  );
+}
+```

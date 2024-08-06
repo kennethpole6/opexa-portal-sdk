@@ -1,0 +1,56 @@
+# Sign Out
+
+The Opexa Portal SDK provides a straightforward `signOut` method to end user sessions securely. This guide offers a detailed explanation of how to implement user sign-out functionality in your application using this method.
+
+## Using the signOut Method
+
+The `signOut` method is designed to be simple yet effective in terminating user sessions. Here's how you can use it:
+
+```typescript
+sdk.signOut();
+```
+
+### Method Signature
+
+```typescript
+signOut(): Promise<void>
+```
+
+### Usage Examples
+
+Here's a detailed example of implementing a sign-out button using React
+
+```tsx filename="App.tsx" copy
+import React, { useState } from "react";
+import { sdk } from "$lib/sdk";
+
+function SignOutButton() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSignOut = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await sdk.signOut();
+      // Sign-out successful, update UI or redirect
+      console.log("Sign-out successful");
+      // You might want to redirect to the home page or login page here
+    } catch (err) {
+      setError("An error occurred during sign-out");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={handleSignOut} disabled={isLoading}>
+        {isLoading ? "Signing Out..." : "Sign Out"}
+      </button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```

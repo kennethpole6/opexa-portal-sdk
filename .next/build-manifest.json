@@ -32,10 +32,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/installation.js"
     ],
-    "/instance/sign-in": [
+    "/instance/create-account": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/instance/sign-in.js"
+      "static/chunks/pages/instance/create-account.js"
     ]
   },
   "ampFirstPages": []

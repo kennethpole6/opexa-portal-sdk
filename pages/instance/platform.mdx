@@ -1,0 +1,132 @@
+# Platform
+
+The Opexa Portal SDK provides `platform()` method to retrieve current platform details. This guide offers a detailed explanation of how to use this method to access and utilize platform-specific information in your application.
+
+## Using the platform() Method
+
+The `platform()` method is designed to fetch comprehensive details about the current platform. Here's how you can use it:
+
+```typescript
+sdk.platform();
+```
+
+### Method Signature
+
+```typescript
+platform(): Promise<PlatformReturn>
+```
+
+### Return Types
+
+The PlatformReturn type provides a structured format for platform information:
+
+```typescript
+type PlatformReturn =
+  | {
+      ok: true;
+      data: Platform;
+    }
+  | {
+      ok: false;
+      error: HttpError;
+    };
+
+interface Platform {
+  paymentSettings: {
+    minimumFirstDepositAmount?: number;
+    restrictWithdrawalsToVerifiedMembers: boolean;
+    depositGateway: {
+      bank: GatewaySettings;
+      gcash: GatewaySettings;
+      maya: GatewaySettings;
+      mayaApp: GatewaySettings;
+    };
+    withdrawalGateway: {
+      bank: GatewaySettings;
+      gcash: GatewaySettings;
+      maya: GatewaySettings;
+      mayaApp: GatewaySettings;
+    };
+  };
+  pointsClubSettings: {
+    multiplier: number;
+  };
+}
+```
+
+### Usage Examples
+
+```ts filename="app.ts" copy
+import React, { useState, useEffect } from "react";
+import { sdk } from "$lib/sdk";
+
+function PlatformInfo() {
+  const [platformData, setPlatformData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPlatformData = async () => {
+      try {
+        const result = await sdk.platform();
+        if (result.ok) {
+          setPlatformData(result.data);
+        } else {
+          setError(result.error.message);
+        }
+      } catch (err) {
+        setError("An unexpected error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPlatformData();
+  }, []);
+
+  if (isLoading) return <div>Loading platform information...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <div>
+      <h2>Platform Information</h2>
+      <h3>Payment Settings</h3>
+      <p>
+        Minimum First Deposit:
+        {platformData.paymentSettings.minimumFirstDepositAmount || "Not set"}
+      </p>
+      <p>
+        Restrict Withdrawals to Verified Members:
+        {platformData.paymentSettings.restrictWithdrawalsToVerifiedMembers
+          ? "Yes"
+          : "No"}
+      </p>
+
+      <h3>Points Club Settings</h3>
+      <p>Multiplier: {platformData.pointsClubSettings.multiplier}</p>
+
+      <h3>Deposit Gateways</h3>
+      <ul>
+        {Object.entries(platformData.paymentSettings.depositGateway).map(
+          ([key, value]) => (
+            <li key={key}>
+              {key}: {value.enabled ? "Enabled" : "Disabled"}
+            </li>
+          )
+        )}
+      </ul>
+
+      <h3>Withdrawal Gateways</h3>
+      <ul>
+        {Object.entries(platformData.paymentSettings.withdrawalGateway).map(
+          ([key, value]) => (
+            <li key={key}>
+              {key}: {value.enabled ? "Enabled" : "Disabled"}
+            </li>
+          )
+        )}
+      </ul>
+    </div>
+  );
+}
+```
